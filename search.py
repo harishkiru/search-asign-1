@@ -12,7 +12,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
@@ -108,6 +107,7 @@ def depthFirstSearch(problem: SearchProblem):
 
         # Check is the current state is the goal state
         if problem.isGoalState(currentState):
+            # Return the path if the goal state is achieved
             return currentPath
 
         # Check if the current state has already been visited
