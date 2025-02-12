@@ -129,19 +129,19 @@ def breadthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE *** (Q2)"
     from util import Queue
     
-    bfsList = Queue()  
+    q = Queue()  
     
     
     start_state = problem.getStartState()
-    bfsList.push((start_state, [])) 
+    q.push((start_state, [])) 
     
-    beenToo = set()
+    occupied = set()
 
-    while not bfsList.isEmpty():
-        state, path = bfsList.pop()
-        if state in beenToo:
+    while not q.isEmpty():
+        state, path = q.pop()
+        if state in occupied:
             continue
-        beenToo.add(state)
+        occupied.add(state)
 
         if problem.isGoalState(state):
             return path
@@ -149,8 +149,8 @@ def breadthFirstSearch(problem: SearchProblem):
         for successor, action, _ in problem.getSuccessors(state):
 
             
-            if successor not in beenToo:
-                bfsList.push((successor, path + [action]))
+            if successor not in occupied:
+                q.push((successor, path + [action]))
 
     return []
 
@@ -175,8 +175,29 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
     "*** YOUR CODE HERE *** (Q4)"
+    import util
+    from util import PriorityQueue
+    pq = PriorityQueue()
+    start_state = problem.getStartState()
+    pq.push((start_state, [], 0), 0) 
+    
+    occupied = {}
+    while not pq.isEmpty():   
+        state, path, cost = pq.pop()
+        if state in occupied and occupied[state] <= cost:
+            continue
+        occupied[state] = cost 
 
-    util.raiseNotDefined()
+        if problem.isGoalState(state):
+            return path
+
+        for successor, action, step_cost in problem.getSuccessors(state):
+            new_cost = cost + step_cost  
+            
+            priority = new_cost + heuristic(successor, problem)  
+            pq.push((successor, path + [action], new_cost), priority)
+    return []  
+#util.raiseNotDefined()
 
 
 # Abbreviations
