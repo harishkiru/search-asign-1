@@ -127,6 +127,32 @@ def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
 
     "*** YOUR CODE HERE *** (Q2)"
+    from util import Queue
+    
+    bfsList = Queue()  
+    
+    
+    start_state = problem.getStartState()
+    bfsList.push((start_state, [])) 
+    
+    beenToo = set()
+
+    while not bfsList.isEmpty():
+        state, path = bfsList.pop()
+        if state in beenToo:
+            continue
+        beenToo.add(state)
+
+        if problem.isGoalState(state):
+            return path
+
+        for successor, action, _ in problem.getSuccessors(state):
+
+            
+            if successor not in beenToo:
+                bfsList.push((successor, path + [action]))
+
+    return []
 
     util.raiseNotDefined()
 
