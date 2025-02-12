@@ -93,7 +93,7 @@ def depthFirstSearch(problem: SearchProblem):
     path = util.Stack()
 
     # Init. state and path lists
-    stateList = []
+    visitedStates = []
     pathList = []
 
     # Push start state and an empty path into their respective stacks
@@ -111,8 +111,8 @@ def depthFirstSearch(problem: SearchProblem):
             return currentPath
 
         # Check if the current state has already been visited
-        if currentState not in stateList:
-            stateList.append(currentState)
+        if currentState not in visitedStates:
+            visitedStates.append(currentState)
             pathList.append(currentPath)
 
             # Add the successor state and its respective path into the stack
@@ -161,8 +161,46 @@ def uniformCostSearch(problem: SearchProblem):
 
     "*** YOUR CODE HERE *** (Q3)"
 
+    # Init. state and path stacks
+    state = util.PriorityQueue()
+    path = util.PriorityQueue()
 
-    util.raiseNotDefined()
+    # Init. state and path lists
+    visitedStates = []
+    pathList = []
+
+    # Push start state to stack
+    state.push(problem.getStartState(), 0)
+    # Set cuurent state to the start state
+    currentState = state.pop()
+
+    # Keep iterating while the current state is not the goal state
+    while not problem.isGoalState(currentState):
+
+        # Check if the current state has already been visited
+        if currentState not in visitedStates:
+            # Add the current state to the visited states list
+            visitedStates.append(currentState)
+
+            # Iterate through the successors of the current state
+            for child, direction, cost in problem.getSuccessors(currentState):
+                # Calculate the cost of the path to the child state
+                findPath = pathList + [direction]
+                calcCost = problem.getCostOfActions(findPath)
+
+                # Check if the child state has not been visited
+                if child not in visitedStates:
+                    # Add the child state and cost to state stack
+                    state.push(child, calcCost)
+                    path.push(findPath, calcCost)
+
+        # Get the next state and path from the state stack
+        pathList = path.pop()
+        currentState = state.pop()
+
+
+    return pathList
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -175,7 +213,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
     "*** YOUR CODE HERE *** (Q4)"
-    import util
     from util import PriorityQueue
     pq = PriorityQueue()
     start_state = problem.getStartState()
