@@ -383,7 +383,7 @@ class CornersProblem(search.SearchProblem):
         return len(actions)
 
 
-def cornersHeuristic(state: Any, problem: CornersProblem):
+def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
 
@@ -399,7 +399,22 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE *** (Q6)"
+    "*** YOUR CODE HERE ***"
+    xy = state[0] 
+    visitedCorners = state[1] 
+
+    
+    if len(visitedCorners) == 4:
+        return 0
+
+    unvisitedCorners = [corner for corner in corners if corner not in visitedCorners]
+
+    
+    nearest_corner = min(unvisitedCorners, key=lambda corner: util.manhattanDistance(xy, corner))
+
+    return util.manhattanDistance(xy, nearest_corner)
+
+
 
 
 class AStarCornersAgent(SearchAgent):

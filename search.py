@@ -93,7 +93,7 @@ def depthFirstSearch(problem: SearchProblem):
     path = util.Stack()
 
     # Init. state and path lists
-    visitedStates = []
+    stateList = []
     pathList = []
 
     # Push start state and an empty path into their respective stacks
@@ -111,8 +111,8 @@ def depthFirstSearch(problem: SearchProblem):
             return currentPath
 
         # Check if the current state has already been visited
-        if currentState not in visitedStates:
-            visitedStates.append(currentState)
+        if currentState not in stateList:
+            stateList.append(currentState)
             pathList.append(currentPath)
 
             # Add the successor state and its respective path into the stack
@@ -123,36 +123,36 @@ def depthFirstSearch(problem: SearchProblem):
     #Return empty list if no valid paths are found
     return []
 
-def breadthFirstSearch(problem: SearchProblem):
+def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-
     "*** YOUR CODE HERE *** (Q2)"
     from util import Queue
-    
-    q = Queue()  
-    
-    
-    start_state = problem.getStartState()
-    q.push((start_state, [])) 
-    
-    occupied = set()
 
-    while not q.isEmpty():
-        state, path = q.pop()
-        if state in occupied:
-            continue
-        occupied.add(state)
-
-        if problem.isGoalState(state):
-            return path
-
-        for successor, action, _ in problem.getSuccessors(state):
-
+    q = Queue()  # Queue to manage the frontier
+    q.push(problem.getStartState())
+    
+    occupied = []  # List to keep track of visited states
+    pathQueue = Queue()  # Queue to hold paths leading to current states
+    finalPath = []  # Final solution path
+    
+    currentNode = q.pop()
+    while not problem.isGoalState(currentNode):
+        if currentNode not in occupied:
+            occupied.append(currentNode)  # Add the state to occupied list
+            successors = problem.getSuccessors(currentNode)
             
-            if successor not in occupied:
-                q.push((successor, path + [action]))
+            for successor, action, _ in successors:
+                q.push(successor)
+                newPath = finalPath + [action]
+                pathQueue.push(newPath)
+        
+        currentNode = q.pop()
+        finalPath = pathQueue.pop()  # Update the path to the current node
+    
+    return finalPath
 
-    return []
+
+
 
     util.raiseNotDefined()
 
@@ -202,6 +202,9 @@ def uniformCostSearch(problem: SearchProblem):
     return pathList
 
 
+
+    util.raiseNotDefined()
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -209,31 +212,57 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
     "*** YOUR CODE HERE *** (Q4)"
     from util import PriorityQueue
-    pq = PriorityQueue()
-    start_state = problem.getStartState()
-    pq.push((start_state, [], 0), 0) 
+
     
-    occupied = {}
-    while not pq.isEmpty():   
-        state, path, cost = pq.pop()
-        if state in occupied and occupied[state] <= cost:
-            continue
-        occupied[state] = cost 
+    pQ = PriorityQueue()
+    pQ.push(problem.getStartState(), 0)
 
-        if problem.isGoalState(state):
-            return path
+   
+    occupiedState = pQ.pop()
 
-        for successor, action, step_cost in problem.getSuccessors(state):
-            new_cost = cost + step_cost  
+    
+    occupied = []
+
+    tempPath = []
+    path = []
+
+    pathToCurrent = PriorityQueue()
+
+    
+    while not problem.isGoalState(occupiedState):
+        if occupiedState not in occupied:
             
-            priority = new_cost + heuristic(successor, problem)  
-            pq.push((successor, path + [action], new_cost), priority)
-    return []  
+            occupied.append(occupiedState)
+
+            
+            successors = problem.getSuccessors(occupiedState)
+
+            
+            for child, direction, cost in successors:
+                
+                tempPath = path + [direction]
+
+                
+                costToGo = problem.getCostOfActions(tempPath) + heuristic(child, problem)
+
+                
+                if child not in occupied:
+                    pQ.push(child, costToGo)
+                    pathToCurrent.push(tempPath, costToGo)
+
+       
+        occupiedState = pQ.pop()
+        path = pathToCurrent.pop()
+
+    
+    return path
+    
+
 #util.raiseNotDefined()
 
 
