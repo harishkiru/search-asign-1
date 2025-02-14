@@ -1,11 +1,11 @@
 # searchAgents.py
-# Assignment 1: 
+# Assignment 1:
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -299,21 +299,30 @@ class CornersProblem(search.SearchProblem):
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state space)
-        """ 
-        
+        """
+
         "*** YOUR CODE HERE *** (Q5)"
         """ A state space can be the start coordinates and a list to hold visited corners"""
-        util.raiseNotDefined()
 
-    def isGoalState(self, state: Any):
+        return self.startingPosition, []
+
+    def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
+
         "*** YOUR CODE HERE *** (Q5)"
-        
-        """ Check to see if a state is a corner, and if so are the other corners visited """
-        
-        util.raiseNotDefined()
+        """ A state is a goal state if all the corners have been visited"""
+        # Get the position (state [0]) and visitedList (state [1]) from the state
+        pos, visitedList = state
+
+        # Check if the position is a corner and if it has been visited yet
+        if pos in self.corners and pos not in visitedList:
+            # Append the corner to the visitedList
+            visitedList.append(pos)
+
+        # Return when all corners have been visited
+        return len(visitedList) == 4
 
     def getSuccessors(self, state: Any):
         """
@@ -338,6 +347,24 @@ class CornersProblem(search.SearchProblem):
 
             "*** YOUR CODE HERE *** (Q5)"
 
+            #Get coords from state
+            x, y = state[0]
+            # Get the direction of the action
+            dx, dy = Actions.directionToVector(action)
+            # Get the next position
+            nextx, nexty = int(x + dx), int(y + dy)
+            # Check if the next position hits a wall
+            hitsWall = self.walls[nextx][nexty]
+
+            if not hitsWall:
+                notVisited = list(state[1])
+                #Define new state
+                nextState = (nextx, nexty)
+                #Check if the next state is a corner and if it has been visited yet and remove it from the list
+                if nextState in self.corners and nextState in notVisited:
+                    notVisited.remove(nextState)
+                #Append the new state to the successors list
+                successors.append(((nextState, notVisited), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
