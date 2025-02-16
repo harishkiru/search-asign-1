@@ -151,11 +151,6 @@ def breadthFirstSearch(problem):
     
     return finalPath
 
-
-
-
-    util.raiseNotDefined()
-
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
 
@@ -216,55 +211,32 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
     "*** YOUR CODE HERE *** (Q4)"
-    from util import PriorityQueue
-
-    
-    pQ = PriorityQueue()
+    pQ = util.PriorityQueue()
     pQ.push(problem.getStartState(), 0)
 
-   
     occupiedState = pQ.pop()
-
     
     occupied = []
-
-    tempPath = []
     path = []
+    pathToCurrent = util.PriorityQueue()
 
-    pathToCurrent = PriorityQueue()
-
-    
     while not problem.isGoalState(occupiedState):
         if occupiedState not in occupied:
-            
             occupied.append(occupiedState)
-
-            
             successors = problem.getSuccessors(occupiedState)
 
-            
             for child, direction, cost in successors:
-                
                 tempPath = path + [direction]
-
-                
                 costToGo = problem.getCostOfActions(tempPath) + heuristic(child, problem)
 
-                
                 if child not in occupied:
                     pQ.push(child, costToGo)
                     pathToCurrent.push(tempPath, costToGo)
 
-       
         occupiedState = pQ.pop()
         path = pathToCurrent.pop()
 
-    
     return path
-    
-
-#util.raiseNotDefined()
-
 
 # Abbreviations
 bfs = breadthFirstSearch
